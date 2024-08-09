@@ -1,0 +1,251 @@
+.form {
+  background-color: rgba(0, 0, 0, 0);
+  /* Dark transparent background */
+  padding: 20px;
+  /* Add padding */
+  border-radius: 10px;
+  /* Rounded corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  /* Slight shadow for contrast */
+  max-width: 600px;
+  /* Limit form width */
+  margin: 0 auto;
+  /* Center the form */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Subtle border */
+  backdrop-filter: blur(1px);
+  /* Blur effect */
+}
+
+.heading {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: -0.6rem;
+  /* Reduced margin-bottom */
+  color: rgba(255, 255, 255, 0.9);
+  /* Slightly opaque white */
+}
+
+.subheading {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  /* Reduced margin-bottom */
+  color: rgba(255, 255, 255, 0.7);
+  /* More transparent white */
+}
+
+.tokenSection {
+  margin-top: 0.5px;
+  /* Increased top margin for more space between sections */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  /* Increased gap between elements */
+  padding: 1rem;
+  /* Increased padding for larger sections */
+}
+
+.tokenImage {
+  height: 2.75rem;
+  /* Increased size */
+  width: 2.75rem;
+  /* Increased size */
+  border-radius: 0.375rem;
+  /* rounded-md equivalent */
+}
+
+.select,
+.input {
+  height: 2.75rem;
+  /* Increased size */
+  width: 150%;
+  max-width: 15rem;
+  /* Increased max width */
+  border-radius: 0.375rem;
+  /* rounded-md equivalent */
+  background-color: rgba(45, 45, 45, 0.8);
+  /* Darker transparent background */
+  color: white;
+  /* White text */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Border */
+  padding: 0 0.5rem;
+  /* Padding inside */
+}
+
+.select option {
+  background-color: rgba(45, 45, 45, 0.8);
+  /* Darker background for options */
+  color: white;
+  /* White text for options */
+}
+
+.select:focus,
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  /* Glow effect */
+}
+
+.inputDisabled {
+  background-color: rgba(255, 255, 255, 0.2);
+  /* Slightly more opaque white */
+  cursor: not-allowed;
+}
+
+.affiliateFee {
+  color: rgb(255, 255, 255);
+  /* text-slate-400 equivalent */
+  text-align: center;
+  margin-top: 2rem;
+  /* Increased top margin */
+  text-align: left;
+  padding-left: 1rem;
+}
+
+.button {
+  background-color:  rgba(171, 70, 53,1);  
+  /* bg-blue-500 equivalent */
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  /* py-2 px-4 equivalent */
+  border-radius: 0.375rem;
+  /* rounded equivalent */
+  width: 100%;
+  margin-top: 1rem;
+  /* Increased top margin */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition */
+  opacity: 1;
+  
+}
+
+
+.button:hover {
+  background-color: rgba(171, 70, 53,1);
+  /* hover:bg-blue-700 equivalent */
+  box-shadow: 0 0 10px rgba(171, 70, 53, 0.7);
+  /* Blue glow effect */
+}
+.button:disabled {
+  opacity: 0.25; /* Adjust the opacity as needed */
+  cursor: not-allowed; /* Optionally change the cursor to indicate the button is disabled */
+  background-color: rgba(171, 70, 53,1); /* Optionally change the background color */
+}
+
+.loading {
+  text-align: center;
+  margin-top: 0.5rem;
+  /* mt-2 equivalent */
+  color: rgba(255, 255, 255, 0.7);
+  /* More transparent white */
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  /* Vertically center the items */
+  justify-content: center;
+  /* Horizontally center the items */
+  gap: 2rem;
+  /* Space between the sections and the toggle button */
+}
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  /* Vertically center the items */
+  justify-content: center;
+  /* Horizontally center the items */
+  gap: 2rem;
+  /* Space between the sections and the toggle button */
+}
+
+.toggleButton {
+  margin-left: 215px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  /* Adjust size as needed */
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.8);
+  /* Dark background */
+  color: white;
+  /* White text */
+  border-radius: 50%;
+  /* Circular button */
+  cursor: pointer;
+  /* Pointer cursor */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Light border */
+  font-size: 1.5rem;
+  /* Size of the arrow */
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  /* Smooth transition */
+  outline: none;
+  /* Remove default outline */
+}
+
+.toggleButton:hover {
+  background-color: rgba(59, 130, 246, 1);
+  /* Change color on hover */
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  /* Glow effect on hover */
+  transform: scale(1.1);
+  /* Slightly enlarge the button on hover */
+}
+
+.toggleButton:focus {
+  outline: none;
+  /* Remove default focus outline */
+}
+
+/* Assuming this is in your Form.module.css or equivalent */
+.toggleIcon {
+  width: 40px;
+  /* Adjust size as needed */
+  height: 40px;
+  border-radius: 50%;
+  /* Circular shape */
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  /* Semi-transparent border */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Dark background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  /* Shadow for better contrast */
+  transition: transform 0.3s, filter 0.3s;
+  /* Smooth transitions */
+}
+
+/* Optional: Add hover effect */
+.toggleIcon:hover {
+  filter: brightness(1.2);
+  /* Slightly brighten on hover */
+  transform: scale(1.1);
+  /* Slightly enlarge on hover */
+}
+
+.go-back-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f01717; /* Button background color */
+  color: white;
+  margin-top: 20px;
+}
+
+.go-back-button:hover {
+  background-color: #f01717; /* Darker blue on hover */
+  filter: brightness(1.2);
+  /* Slightly brighten on hover */
+  transform: scale(1.1);
+  /* Slightly enlarge on hover */
+}
