@@ -2,6 +2,7 @@ import { Address } from "wagmi";
 
 // https://docs.0x.org/0x-api-swap/api-references/get-swap-v1-price#response
 export interface PriceResponse {
+  to: `0x${string}`;
   chainId: number;
   price: string;
   estimatedPriceImpact: string;

@@ -1,11 +1,12 @@
+import "@/styles/globals.css";
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { ConnectKitProvider, ConnectKitButton, getDefaultConfig } from 'connectkit';
 import { publicProvider } from 'wagmi/providers/public';
 import { polygon } from 'wagmi/chains';
 import { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
 import { AppProps } from 'next/app';
-import React from 'react';
+
+const ethers = require('ethers');
 
 
 // Configure only the Polygon chain
@@ -51,7 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
           console.error('User rejected the request:', error);
           alert('You rejected the request to connect your wallet.');
         } else {
-          console.error('Error connecting to MetaMask:', error);
+          console.error('Error connecting to Wallet:', error);
         }
       }
     } else {
@@ -62,7 +63,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div style={{ padding: "20px" }}>
       <WagmiConfig config={config}>
-        <ConnectKitProvider>
+        <ConnectKitProvider theme="midnight">
           <div className="top-right">
             <ConnectKitButton />
           </div>
@@ -73,8 +74,7 @@ export default function App({ Component, pageProps }: AppProps) {
         .top-right {
           position: absolute;
           top: 20px;
-          right: 20px;
-        }
+          right: 20px;        }
       `}</style>
     </div>
   );

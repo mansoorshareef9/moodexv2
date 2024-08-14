@@ -1,6 +1,5 @@
 import qs from "qs";
 import React from 'react';
-
 import useSWR from "swr";
 import { ConnectKitButton } from "connectkit";
 import { useState, ChangeEvent } from "react";
@@ -32,8 +31,10 @@ interface PriceRequestParams {
   takerAddress?: string;
 }
 
+
 const AFFILIATE_FEE = 0.0; // Percentage of the buyAmount that should be attributed to feeRecipient as affiliate fees
 const FEE_RECIPIENT = "0xD86766b68e844E9096662d0E38Bc6d11e803B7Bb"; // The ETH address that should receive affiliate fees
+
 
 export const fetcher = ([endpoint, params]: [string, PriceRequestParams]) => {
   const { sellAmount, buyAmount } = params;
@@ -42,6 +43,8 @@ export const fetcher = ([endpoint, params]: [string, PriceRequestParams]) => {
 
   return fetch(`${endpoint}?${query}`).then((res) => res.json());
 };
+
+
 
 export default function PriceView({
   price,
@@ -57,7 +60,7 @@ export default function PriceView({
   const [sellAmount, setSellAmount] = useState("");
   const [buyAmount, setBuyAmount] = useState("");
   const [tradeDirection, setTradeDirection] = useState("sell");
-  const [sellToken, setSellToken] = useState("wmatic");
+  const [sellToken, setSellToken] = useState("matic");
   const [buyToken, setBuyToken] = useState("holycow");
 
   const handleSellTokenChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -66,7 +69,24 @@ export default function PriceView({
 
   function handleBuyTokenChange(e: ChangeEvent<HTMLSelectElement>) {
     setBuyToken(e.target.value);
-  }
+  };
+  // Fetch balances for sell and buy tokens
+  const { data: sellTokenBalance, isError: sellError } = useBalance({
+    address: takerAddress,
+    token: sellToken === "matic" ? undefined : POLYGON_TOKENS_BY_SYMBOL[sellToken]?.address,
+  });
+  const { data: buyTokenBalance, isError: buyError } = useBalance({
+    address: takerAddress,
+    token: buyToken === "matic" ? undefined : POLYGON_TOKENS_BY_SYMBOL[buyToken]?.address,
+  });
+  
+  //click on balance amount
+  const handleBalanceClick = () => {
+    if (sellTokenBalance) {
+      const fullBalance = formatUnits(sellTokenBalance.value, POLYGON_TOKENS_BY_SYMBOL[sellToken].decimals);
+      setSellAmount(Number(fullBalance).toFixed(1));
+    }
+  };
 
   const toggleTokens = () => {
     // Swap tokens and amounts
@@ -128,10 +148,22 @@ export default function PriceView({
     token: POLYGON_TOKENS_BY_SYMBOL[sellToken].address,
   });
 
+  
+
   const disabled =
-    data && sellAmount
-      ? parseUnits(sellAmount, sellTokenDecimals) > data.value
-      : true;
+  sellTokenBalance && sellAmount
+    ? parseUnits(sellAmount, sellTokenDecimals) > sellTokenBalance.value
+    : !sellTokenBalance || !sellAmount || isNaN(Number(sellAmount));
+
+
+  // Format and round the balances to 1 decimal place
+  const formattedSellTokenBalance = sellTokenBalance
+  ? Number(formatUnits(sellTokenBalance.value, POLYGON_TOKENS_BY_SYMBOL[sellToken].decimals)).toFixed(1)
+  : "0.0";
+
+const formattedBuyTokenBalance = buyTokenBalance
+  ? Number(formatUnits(buyTokenBalance.value, POLYGON_TOKENS_BY_SYMBOL[buyToken].decimals)).toFixed(1)
+  : "0.0";
 
   return (
     <form className={styles.form}>
@@ -174,7 +206,9 @@ export default function PriceView({
             }}
           />
         </section>
-
+        <div className={styles.balanceText} onClick={handleBalanceClick} style={{ cursor: "pointer" }}>
+            Balance: {formattedSellTokenBalance}
+          </div>
         <button
         type="button"
         className={styles.toggleButton}
@@ -222,6 +256,9 @@ export default function PriceView({
             }}
           />
         </section>
+        <div className={styles.balanceText}>
+            Balance: {formattedBuyTokenBalance}
+          </div>
 
         <div className={styles.affiliateFee}>
           {price && price.grossBuyAmount
@@ -241,9 +278,8 @@ export default function PriceView({
           takerAddress={takerAddress}
           onClick={() => {
             setFinalize(true);
-          }}
-          disabled={disabled}
-        />
+          } }
+          disabled={disabled} parsedSellAmount={0n}        />
       ) : (
         <ConnectKitButton.Custom>
           {({ isConnected, show, address }) => (
@@ -270,11 +306,13 @@ function ApproveOrReviewButton({
   onClick,
   sellTokenAddress,
   disabled,
+  parsedSellAmount
 }: {
   takerAddress: Address;
   onClick: () => void;
   sellTokenAddress: Address;
   disabled?: boolean;
+  parsedSellAmount:bigint
 }) {
   // 1. Read from erc20, does spender (0x Exchange Proxy) have allowance?
   const { data: allowance, refetch } = useContractRead({
@@ -284,6 +322,7 @@ function ApproveOrReviewButton({
     args: [takerAddress, exchangeProxy],
   });
 
+  
   // 2. (only if no allowance): write to erc20, approve 0x Exchange Proxy to spend max integer
   const { config } = usePrepareContractWrite({
     address: sellTokenAddress,
@@ -303,20 +342,37 @@ function ApproveOrReviewButton({
     onSuccess(data) {
       refetch();
     },
+    onError(error) {
+      console.error('Transaction failed or was rejected by the user:', error);
+      alert('Transaction was rejected or failed. Please try again.');
+    },
   });
 
-  if (error) {
-    return <div>Something went wrong: {error.message}</div>;
-  }
-
-  if (allowance === 0n && approveAsync) {
+  const isApprovalNeeded = allowance === undefined || allowance === 0n || BigInt(allowance) < parsedSellAmount;  
+  if (isApprovalNeeded && approveAsync) {
     return (
       <>
         <button
           type="button"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
           onClick={async () => {
-            const writtenValue = await approveAsync();
+            try {
+              const writtenValue = await approveAsync();
+              console.log('Transaction sent:', writtenValue);
+            } catch (error: any) {
+              if (error.name === 'TransactionExecutionError' && error.message.includes('User rejected the request')) {
+                // Handle the specific case where the user rejects the transaction
+                console.warn('User rejected the transaction.');
+                alert('You rejected the transaction. Please try again if you wish to proceed.');
+                window.location.reload();
+              } else {
+                // Handle other errors
+                console.error('Transaction failed:', error);
+                alert('Transaction failed. Please try again.');
+                window.location.reload();
+
+              }
+            }
           }}
         >
           {isApproving ? "Approving…" : "Approve"}
@@ -324,7 +380,6 @@ function ApproveOrReviewButton({
       </>
     );
   }
-
   return (
     <button
       type="button"
